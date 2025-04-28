@@ -62,7 +62,25 @@ class _TodoApplicationState extends State<TodoApplication> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {},child: Icon(Icons.add),),
+      floatingActionButton: FloatingActionButton(onPressed: () {
+        showModalBottomSheet(context: context, builder: (context)
+        
+        {
+          return SizedBox(
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Form(child: Column(
+                children: [
+                  Text("Add Todo",style: TextStyle(fontSize: 28),),
+                  // add form field for 
+                ],
+              )),
+            ),
+          );
+        }
+        );
+      },child: Icon(Icons.add),),
     );
   }
 }
