@@ -2,28 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:todoapplication/model/todo.dart';
 
 class TodoApplication extends StatefulWidget {
-   TodoApplication({super.key});
+  TodoApplication({super.key});
 
-  List<Todo> todos = [
-    Todo(id: "1",
-    title: "This is title",
-    description: "Mamaghar janxu",
-    isCompleted: true,
+  final List<Todo> todos = [
+    Todo(
+      id: "1",
+      title: "This is title",
+      description: "Mamaghar janxu",
+      isCompleted: true,
     ),
-     Todo(id: "2",
-    title: "This is title",
-    description: "Mamaghar janxu",
-    isCompleted: true,
+    Todo(
+      id: "2",
+      title: "This is title",
+      description: "Mamaghar janxu",
+      isCompleted: true,
     ),
-     Todo(id: "3",
-    title: "This is title",
-    description: "Mamaghar janxu",
-    isCompleted: true,
+    Todo(
+      id: "3",
+      title: "This is title",
+      description: "Mamaghar janxu",
+      isCompleted: true,
     ),
-     Todo(id: "4",
-    title: "This is title",
-    description: "Mamaghar janxu",
-    isCompleted: true,
+    Todo(
+      id: "4",
+      title: "This is title",
+      description: "Mamaghar janxu",
+      isCompleted: true,
     ),
   ];
 
@@ -34,13 +38,31 @@ class TodoApplication extends StatefulWidget {
 class _TodoApplicationState extends State<TodoApplication> {
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
-        title: Text("Todo Application",style: TextStyle(color: Colors.white),),
+        title: const Text(
+          "Todo Application",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.red,
         centerTitle: true,
       ),
-      
+      body: ListView.builder(
+        itemCount: widget.todos.length,
+        itemBuilder: (ctx, i) {
+          return ListTile(
+            leading: Checkbox(
+              value: widget.todos[i].isCompleted,
+              onChanged: (value) {
+               
+              },
+            ),
+            title: Text(widget.todos[i].title),
+            subtitle: Text(widget.todos[i].description),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(onPressed: () {},child: Icon(Icons.add),),
     );
   }
 }
