@@ -73,7 +73,24 @@ class _TodoApplicationState extends State<TodoApplication> {
               child: Form(child: Column(
                 children: [
                   Text("Add Todo",style: TextStyle(fontSize: 28),),
-                  // add form field for 
+                  TextFormField(decoration: InputDecoration(labelText: "Title"),),
+                  TextFormField(decoration: InputDecoration(labelText: "Description"), maxLines: 3,),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        FilledButton(
+                          onPressed: () {
+                          Navigator.of(context).pop();
+                          },
+                          child: Text("Cancel"),
+                        ),
+                        FilledButton(onPressed: () {}, child: Text("Submit")),
+                      ],
+                    
+                    ),
+                  ),
                 ],
               )),
             ),
