@@ -5,30 +5,30 @@ class TodoApplication extends StatefulWidget {
   TodoApplication({super.key});
 
   final List<Todo> todos = [
-    // Todo(
-    //   id: "1",
-    //   title: "This is title",
-    //   description: "Mamaghar janxu",
-    //   isCompleted: true,
-    // ),
-    // Todo(
-    //   id: "2",
-    //   title: "This is title",
-    //   description: "Mamaghar janxu",
-    //   isCompleted: true,
-    // ),
-    // Todo(
-    //   id: "3",
-    //   title: "This is title",
-    //   description: "Mamaghar janxu",
-    //   isCompleted: true,
-    // ),
-    // Todo(
-    //   id: "4",
-    //   title: "This is title",
-    //   description: "Mamaghar janxu",
-    //   isCompleted: true,
-    // ),
+    Todo(
+      id: "1",
+      title: "This is title",
+      description: "Mamaghar janxu",
+      isCompleted: true,
+    ),
+    Todo(
+      id: "2",
+      title: "This is title",
+      description: "Mamaghar janxu",
+      isCompleted: true,
+    ),
+    Todo(
+      id: "3",
+      title: "This is title",
+      description: "Mamaghar janxu",
+      isCompleted: true,
+    ),
+    Todo(
+      id: "4",
+      title: "This is title",
+      description: "Mamaghar janxu",
+      isCompleted: true,
+    ),
   ];
 
   @override
@@ -51,7 +51,11 @@ class _TodoApplicationState extends State<TodoApplication> {
         backgroundColor: Colors.red,
         centerTitle: true,
       ),
-      body: ListView.builder(
+      body: widget.todos.isEmpty ? Center(
+        child: Text("No Todos Available"),
+      ):
+       ListView.builder(
+
         itemCount: widget.todos.length,
         itemBuilder: (ctx, i) {
           return ListTile(
@@ -67,10 +71,46 @@ class _TodoApplicationState extends State<TodoApplication> {
             subtitle: Text(widget.todos[i].description),
             trailing: IconButton(onPressed: ()
             {
-              setState(() {
-                widget.todos.remove(widget.todos[i]);
-                
+              showDialog(context: context, builder: (context)
+              {
+                return AlertDialog(
+                  title: Text("Are you sure to Delete"),
+                  content: Text("This action is irreversible"),
+                  actions: [
+                 FilledButton.tonal(onPressed: () {Navigator.of(context).pop();}, child: Text("Cancel")),
+                 FilledButton.tonal(
+                  style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.red),
+                  ),
+                  onPressed: () {
+                  setState(() {
+                    widget.todos.removeAt(i);
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                   
+                    SnackBar(
+                      
+                      backgroundColor: Colors.blueGrey,
+                      behavior: SnackBarBehavior.floating,
+                      content: Text("Deleted Successfully"),
+                      duration: Duration(seconds: 4),
+                      showCloseIcon: true,
+                    )
+                  );
+                  Navigator.of(context).pop();
+                  },
+                  child: Text(
+                  "Yes!",
+                  style: TextStyle(color: Colors.white),
+                  ),
+                 ),
+
+                ],);
               });
+              // setState(() {
+              //   widget.todos.remove(widget.todos[i]);
+                
+              // });
             }, icon: Icon(Icons.delete)),
           );
           
