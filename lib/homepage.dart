@@ -68,7 +68,8 @@ class _TodoApplicationState extends State<TodoApplication> {
             trailing: IconButton(onPressed: ()
             {
               setState(() {
-                widget.todos.removeAt(i);
+                widget.todos.remove(widget.todos[i]);
+                
               });
             }, icon: Icon(Icons.delete)),
           );
