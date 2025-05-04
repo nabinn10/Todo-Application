@@ -1,5 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:todoapplication/model/todo.dart';
+import 'package:todo_app/model/todo.dart';
 
 class TodoApplication extends StatefulWidget {
   TodoApplication({super.key});
@@ -8,25 +9,25 @@ class TodoApplication extends StatefulWidget {
     Todo(
       id: "1",
       title: "This is title",
-      description: "Mamaghar janxu",
+      description: "Hero Arun",
       isCompleted: true,
     ),
     Todo(
       id: "2",
       title: "This is title",
-      description: "Mamaghar janxu",
+      description: "Don Arun",
       isCompleted: true,
     ),
     Todo(
       id: "3",
       title: "This is title",
-      description: "Mamaghar janxu",
+      description: "Timro Babe",
       isCompleted: true,
     ),
     Todo(
       id: "4",
       title: "This is title",
-      description: "Mamaghar janxu",
+      description: "Binisha Don",
       isCompleted: true,
     ),
   ];
@@ -36,10 +37,20 @@ class TodoApplication extends StatefulWidget {
 }
 
 class _TodoApplicationState extends State<TodoApplication> {
+
+  fetchTodos() async {
+   final Dio dio=Dio();
+ final response= await  dio.get('https://jsonplaceholder.typicode.com/todos');
+  
+
+  for(var todo in response.data){
+    widget.todos.add(Todo.fromMap(todo));
+  }
+  }
+  final GlobalKey<FormState> todoFormKey = GlobalKey();
+
   String title = "";
   String description = "";
-  final GlobalKey<FormState> todoformkey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,166 +59,198 @@ class _TodoApplicationState extends State<TodoApplication> {
           "Todo Application",
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.red,
+        backgroundColor: const Color.fromARGB(255, 21, 4, 145),
         centerTitle: true,
       ),
-      body: widget.todos.isEmpty ? Center(
-        child: Text("No Todos Available"),
-      ):
-       ListView.builder(
+      body:widget.todos.isEmpty ?
+       Center(
+        child: Text("Ooops No Any Todo List"),
+       )
+     :FutureBuilder(
+         future: fetchTodos(),
+         builder: (context, snapshot) {
+           if (snapshot.connectionState == ConnectionState.done) {
+             if (snapshot.hasData) {
+               return ListView.builder(
+                 itemCount: widget.todos.length,
+                 itemBuilder: (ctx, i) {
+                   return ListTile(
+                     leading: Checkbox(
+                       value: widget.todos[i].isCompleted,
+                       onChanged: (value) {
+                         setState(() {
+                           widget.todos[i].isCompleted = value ?? false;
+                         });
+                       },
+                     ),
+                     title: Text(widget.todos[i].title),
+                     subtitle: Text(widget.todos[i].description ?? "-"),
+                     trailing: IconButton(
+                       onPressed: () {
+                         showDialog(
+                           context: context,
+                           builder: (context) {
+                             return AlertDialog(
+                               title: Text(
+                                 "Are You Sure To Delete",
+                                 style: TextStyle(color: Colors.red),
+                               ),
+                               content: Text("This action is irreversible"),
+                               actions: [
+                                 FilledButton.tonal(
+                                   style: FilledButton.styleFrom(
+                                     backgroundColor: Colors.red.shade400,
+                                     foregroundColor: Colors.white,
+                                   ),
+                                   onPressed: () {
+                                     setState(() {
+                                       widget.todos.remove(widget.todos[i]);
+                                     });
 
-        itemCount: widget.todos.length,
-        itemBuilder: (ctx, i) {
-          return ListTile(
-            leading: Checkbox(
-              value: widget.todos[i].isCompleted,
-              onChanged: (value) {
-                setState(() {
-                  widget.todos[i].isCompleted = value!;
-                });
-              },
-            ),
-            title: Text(widget.todos[i].title),
-            subtitle: Text(widget.todos[i].description),
-            trailing: IconButton(onPressed: ()
-            {
-              showDialog(context: context, builder: (context)
-              {
-                return AlertDialog(
-                  title: Text("Are you sure to Delete"),
-                  content: Text("This action is irreversible"),
-                  actions: [
-                 FilledButton.tonal(onPressed: () {Navigator.of(context).pop();}, child: Text("Cancel")),
-                 FilledButton.tonal(
-                  style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.red),
-                  ),
-                  onPressed: () {
-                  setState(() {
-                    widget.todos.removeAt(i);
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                   
-                    SnackBar(
-                      
-                      backgroundColor: Colors.blueGrey,
-                      behavior: SnackBarBehavior.floating,
-                      content: Text("Deleted Successfully"),
-                      duration: Duration(seconds: 4),
-                      showCloseIcon: true,
-                    )
-                  );
-                  Navigator.of(context).pop();
-                  },
-                  child: Text(
-                  "Yes!",
-                  style: TextStyle(color: Colors.white),
-                  ),
-                 ),
-
-                ],);
-              });
-              // setState(() {
-              //   widget.todos.remove(widget.todos[i]);
-                
-              // });
-            }, icon: Icon(Icons.delete)),
-          );
-          
-        },
-      ),
+                                     ScaffoldMessenger.of(context)
+                                         .showSnackBar(SnackBar(
+                                       backgroundColor:
+                                           Colors.green.shade500,
+                                       behavior: SnackBarBehavior.floating,
+                                       duration: Duration(seconds: 3),
+                                       showCloseIcon: true,
+                                       content: Text("Successfully Deleted"),
+                                     ));
+                                     Navigator.of(context).pop();
+                                   },
+                                   child: Text("Yes"),
+                                 ),
+                                 FilledButton(
+                                   onPressed: () {
+                                     Navigator.of(context).pop();
+                                   },
+                                   child: Text("Cancel"),
+                                 ),
+                               ],
+                             );
+                           },
+                         );
+                       },
+                       icon: Icon(Icons.delete),
+                       color: Colors.red,
+                     ),
+                   );
+                 },
+               );
+             } else if (snapshot.hasError) {
+               return Center(
+                 child: Text("Error ${snapshot.error}"),
+               );
+             } else {
+               return Center(child: CircularProgressIndicator());
+             }
+           } else {
+             return Center(child: CircularProgressIndicator());
+           }
+         },
+       ),
+      
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              builder: (context) {
-                return SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-                      left: 16,
-                      right: 16,
-                      top: 16,
-                    ),
-                    child: Form(
-                      key: todoformkey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text("Add Todo",
-                              style: TextStyle(fontSize: 28)),
-                          TextFormField(
-                            onTapOutside: (event) => FocusScope.of(context).requestFocus(FocusNode()),
-                            decoration:
-                                const InputDecoration(labelText: "Title"),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Please provide Title";
-                              }
+            context: context,
+            builder: (context) {
+              return SizedBox(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Form(
+                    key: todoFormKey,
+                    child: Column(
+                      children: [
+                        Text("Add Todo", style: TextStyle(fontSize: 28)),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Title"),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please Provide Description";
+                            } else {
                               return null;
-                            },
-                            onSaved: (value) {
+                            }
+                          },
+
+                          onSaved: (value) {
+                            setState(() {
                               title = value!;
-                            },
-                          ),
-                          TextFormField(
-                            onTapOutside: (event) => FocusScope.of(context).requestFocus(FocusNode()),
-                            decoration:
-                                const InputDecoration(labelText: "Description"),
-                            maxLines: 3,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Please provide description";
-                              }
+                            });
+                          },
+
+                          onTapOutside:
+                              (event) => FocusScope.of(
+                                context,
+                              ).requestFocus(FocusNode()),
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Description"),
+                          maxLines: 3,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please Provide Description";
+                            } else {
                               return null;
-                            },
-                            onSaved: (value) {
+                            }
+                          },
+                          onSaved: (value) {
+                            setState(() {
                               description = value!;
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
+                            });
+                          },
+
+                          onTapOutside:
+                              (event) => FocusScope.of(
+                                context,
+                              ).requestFocus(FocusNode()),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               FilledButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: const Text("Cancel"),
+                                child: Text("Cancel"),
                               ),
                               FilledButton(
-                                  onPressed: () {
-                                    if (!todoformkey.currentState!
-                                        .validate()) {
-                                      return;
-                                    }
-                                    todoformkey.currentState!.save();
-                                    setState(() {
-                                      widget.todos.add(
-                                        Todo(
-                                          id: DateTime.now()
-                                              .millisecondsSinceEpoch
-                                              .toString(),
-                                          title: title,
-                                          description: description,
-                                          isCompleted: false,
-                                        ),
-                                      );
-                                    });
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text("Submit")),
+                                onPressed: () {
+                                  if (!todoFormKey.currentState!.validate()) {
+                                    return;
+                                  }
+
+                                  todoFormKey.currentState!.save();
+
+                                  setState(() {
+                                    widget.todos.add(
+                                      Todo(
+                                        id: widget.todos.length.toString(),
+                                        title: title,
+                                        description: description,
+                                      ),
+                                    );
+                                  });
+
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Submit"),
+                              ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              });
+                ),
+              );
+            },
+          );
         },
-        child: const Icon(Icons.add),
+        child: Icon(Icons.add),
       ),
     );
   }
