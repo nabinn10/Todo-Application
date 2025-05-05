@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       //   AppRoutes.firstScreen: (ctx) => NamedFirstScreen(),
       //   AppRoutes.secondScreen: (ctx) => NamedSecondScreen(),
       // },
-      // hello
+      // hello..
     );
   }
 }
