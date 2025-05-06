@@ -9,26 +9,26 @@ class TodoApplication extends StatefulWidget {
     Todo(
       id: "1",
       title: "This is title",
-      description: "Hero Arun",
+      description: "Mamaghar Janxu",
       isCompleted: true,
     ),
     Todo(
       id: "2",
       title: "This is title",
-      description: "Don Arun",
+      description: "Mamaghar janxu",
       isCompleted: true,
     ),
     Todo(
       id: "3",
       title: "This is title",
-      description: "Timro Babe",
-      isCompleted: true,
+      description: "Mamaghar janxu",
+      isCompleted: false,
     ),
     Todo(
       id: "4",
       title: "This is title",
-      description: "Binisha Don",
-      isCompleted: true,
+      description: "College janxu",
+      isCompleted: false,
     ),
   ];
 
@@ -37,6 +37,8 @@ class TodoApplication extends StatefulWidget {
 }
 
 class _TodoApplicationState extends State<TodoApplication> {
+  String selectedFilter = "All"; // All, Completed, Pending
+
   fetchTodos() async {
     final Dio dio = Dio();
     final response = await dio.get(
@@ -50,11 +52,17 @@ class _TodoApplicationState extends State<TodoApplication> {
   }
 
   final GlobalKey<FormState> todoFormKey = GlobalKey();
-
   String title = "";
   String description = "";
+
   @override
   Widget build(BuildContext context) {
+    List<Todo> displayTodos = widget.todos.where((todo) {
+      if (selectedFilter == "Completed") return todo.isCompleted;
+      if (selectedFilter == "Pending") return !todo.isCompleted;
+      return true;
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -64,102 +72,129 @@ class _TodoApplicationState extends State<TodoApplication> {
         backgroundColor: const Color.fromARGB(255, 21, 4, 145),
         centerTitle: true,
       ),
-      body:
-          widget.todos.isEmpty
-              ? Center(child: Text("Ooops No Any Todo List"))
-              : FutureBuilder(
-                future: fetchTodos(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                        itemCount: widget.todos.length,
-                        itemBuilder: (ctx, i) {
-                          return ListTile(
-                            leading: Checkbox(
-                              value: widget.todos[i].isCompleted,
-                              onChanged: (value) {
-                                setState(() {
-                                  widget.todos[i].isCompleted = value ?? false;
-                                });
-                              },
-                            ),
-                            title: Text(widget.todos[i].title),
-                            subtitle: Text(widget.todos[i].description ?? "-"),
-                            trailing: IconButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      title: Text(
-                                        "Are You Sure To Delete",
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                      content: Text(
-                                        "This action is irreversible",
-                                      ),
-                                      actions: [
-                                        FilledButton.tonal(
-                                          style: FilledButton.styleFrom(
-                                            backgroundColor:
-                                                Colors.red.shade400,
-                                            foregroundColor: Colors.white,
+      body: widget.todos.isEmpty
+          ? Center(child: Text("Ooops No Any Todo List"))
+          : Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ActionChip(
+                      label: Text("All", style: TextStyle(color: Colors.white)),
+                      backgroundColor: Colors.red,
+                      onPressed: () {
+                        setState(() {
+                          selectedFilter = "All";
+                        });
+                      },
+                    ),
+                    ActionChip(
+                      label:
+                          Text("Completed", style: TextStyle(color: Colors.white)),
+                      backgroundColor: Colors.green,
+                      onPressed: () {
+                        setState(() {
+                          selectedFilter = "Completed";
+                        });
+                      },
+                    ),
+                    ActionChip(
+                      label:
+                          Text("Pending", style: TextStyle(color: Colors.white)),
+                      backgroundColor: Colors.orange,
+                      onPressed: () {
+                        setState(() {
+                          selectedFilter = "Pending";
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: FutureBuilder(
+                    future: fetchTodos(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                            itemCount: displayTodos.length,
+                            itemBuilder: (ctx, i) {
+                              final todo = displayTodos[i];
+                              return ListTile(
+                                leading: Checkbox(
+                                  value: todo.isCompleted,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      todo.isCompleted = value ?? false;
+                                      // Also update the original todo
+                                      int index = widget.todos.indexWhere((t) => t.id == todo.id);
+                                      if (index != -1) {
+                                        widget.todos[index].isCompleted =
+                                            value ?? false;
+                                      }
+                                    });
+                                  },
+                                ),
+                                title: Text(todo.title),
+                                subtitle: Text(todo.description ?? "-"),
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: Text(
+                                            "Are You Sure To Delete",
+                                            style: TextStyle(color: Colors.red),
                                           ),
-                                          onPressed: () {
-                                            setState(() {
-                                              widget.todos.remove(
-                                                widget.todos[i],
-                                              );
-                                            });
-
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
+                                          content: Text(
+                                              "This action is irreversible"),
+                                          actions: [
+                                            FilledButton.tonal(
+                                              style: FilledButton.styleFrom(
                                                 backgroundColor:
-                                                    Colors.green.shade500,
-                                                behavior:
-                                                    SnackBarBehavior.floating,
-                                                duration: Duration(seconds: 3),
-                                                showCloseIcon: true,
-                                                content: Text(
-                                                  "Successfully Deleted",
-                                                ),
+                                                    Colors.red.shade400,
+                                                foregroundColor: Colors.white,
                                               ),
-                                            );
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Text("Yes"),
-                                        ),
-                                        FilledButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Text("Cancel"),
-                                        ),
-                                      ],
+                                              onPressed: () {
+                                                setState(() {
+                                                  widget.todos.removeWhere(
+                                                      (t) => t.id == todo.id);
+                                                });
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text("Yes"),
+                                            ),
+                                            FilledButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text("Cancel"),
+                                            ),
+                                          ],
+                                        );
+                                      },
                                     );
                                   },
-                                );
-                              },
-                              icon: Icon(Icons.delete),
-                              color: Colors.red,
-                            ),
+                                  icon: Icon(Icons.delete),
+                                  color: Colors.red,
+                                ),
+                              );
+                            },
                           );
-                        },
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text("Error ${snapshot.error}"));
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                  } else {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                },
-              ),
-
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text("Error ${snapshot.error}"));
+                        } else {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                      } else {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
@@ -178,22 +213,16 @@ class _TodoApplicationState extends State<TodoApplication> {
                           decoration: InputDecoration(labelText: "Title"),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Please Provide Description";
+                              return "Please Provide Title";
                             } else {
                               return null;
                             }
                           },
-
                           onSaved: (value) {
-                            setState(() {
-                              title = value!;
-                            });
+                            title = value!;
                           },
-
-                          onTapOutside:
-                              (event) => FocusScope.of(
-                                context,
-                              ).requestFocus(FocusNode()),
+                          onTapOutside: (_) =>
+                              FocusScope.of(context).requestFocus(FocusNode()),
                         ),
                         TextFormField(
                           decoration: InputDecoration(labelText: "Description"),
@@ -206,15 +235,10 @@ class _TodoApplicationState extends State<TodoApplication> {
                             }
                           },
                           onSaved: (value) {
-                            setState(() {
-                              description = value!;
-                            });
+                            description = value!;
                           },
-
-                          onTapOutside:
-                              (event) => FocusScope.of(
-                                context,
-                              ).requestFocus(FocusNode()),
+                          onTapOutside: (_) =>
+                              FocusScope.of(context).requestFocus(FocusNode()),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -241,6 +265,7 @@ class _TodoApplicationState extends State<TodoApplication> {
                                         id: widget.todos.length.toString(),
                                         title: title,
                                         description: description,
+                                        isCompleted: false,
                                       ),
                                     );
                                   });
