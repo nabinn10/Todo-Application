@@ -25,7 +25,7 @@ class TodoApplication extends StatefulWidget {
       isCompleted: false,
     ),
     Todo(
-      id: "4"
+      id: "4",
       title: "This is title",
       description: "College janxu",
       isCompleted: false,
@@ -37,7 +37,7 @@ class TodoApplication extends StatefulWidget {
 }
 
 class _TodoApplicationState extends State<TodoApplication> {
-  String selectedFilter = "All"; // All, Completed, Pending
+  String selectedFilter = "All";
 
   fetchTodos() async {
     final Dio dio = Dio();
