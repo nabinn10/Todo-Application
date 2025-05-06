@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/Post.dart';
 import 'package:todo_app/homepage.dart';
 // import 'package:todoapplication/homepage.dart';
 
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: TodoApplication(),
+      home: Postpage(),
       // routes: {
       //   AppRoutes.firstScreen: (ctx) => NamedFirstScreen(),
       //   AppRoutes.secondScreen: (ctx) => NamedSecondScreen(),

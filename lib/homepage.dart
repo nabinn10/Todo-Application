@@ -80,8 +80,10 @@ class _TodoApplicationState extends State<TodoApplication> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     ActionChip(
-                      label: Text("All", style: TextStyle(color: Colors.white)),
-                      backgroundColor: Colors.red,
+                      label: Text("All", style: TextStyle(color:
+                      selectedFilter == "All" ? Colors.white : Colors.black)),
+                      backgroundColor:  selectedFilter == "All" ? Colors.deepPurpleAccent : null,
+
                       onPressed: () {
                         setState(() {
                           selectedFilter = "All";
@@ -90,8 +92,9 @@ class _TodoApplicationState extends State<TodoApplication> {
                     ),
                     ActionChip(
                       label:
-                          Text("Completed", style: TextStyle(color: Colors.white)),
-                      backgroundColor: Colors.green,
+                          Text("Completed", style: TextStyle(color: selectedFilter == "Complted" ? Colors.white : Colors.black)),
+                      backgroundColor: 
+                      selectedFilter == "Completed" ? Colors.deepPurpleAccent : null,
                       onPressed: () {
                         setState(() {
                           selectedFilter = "Completed";
@@ -100,8 +103,8 @@ class _TodoApplicationState extends State<TodoApplication> {
                     ),
                     ActionChip(
                       label:
-                          Text("Pending", style: TextStyle(color: Colors.white)),
-                      backgroundColor: Colors.orange,
+                           Text("Pending", style: TextStyle(color: selectedFilter == "Pending" ? Colors.white : Colors.black)),
+                      backgroundColor:  selectedFilter == "Pending" ? Colors.deepPurpleAccent : null,
                       onPressed: () {
                         setState(() {
                           selectedFilter = "Pending";
