@@ -25,7 +25,7 @@ class TodoApplication extends StatefulWidget {
       isCompleted: false,
     ),
     Todo(
-      id: "4",
+      id: "4"
       title: "This is title",
       description: "College janxu",
       isCompleted: false,
