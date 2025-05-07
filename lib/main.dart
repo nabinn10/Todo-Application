@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/Post.dart';
 import 'package:todo_app/homepage.dart';
+import 'package:todo_app/postview.dart';
+import 'approutes.dart';
 // import 'package:todoapplication/homepage.dart';
 
 void main() {
@@ -21,10 +23,10 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: Postpage(),
-      // routes: {
-      //   AppRoutes.firstScreen: (ctx) => NamedFirstScreen(),
-      //   AppRoutes.secondScreen: (ctx) => NamedSecondScreen(),
-      // },
+      routes: {
+        Approutes.postScreen: (ctx) => Postpage(),
+        Approutes.postviewScreen: (ctx) => Postview(),
+      },
       // hello..
     );
   }
